@@ -64,12 +64,14 @@ router.get("/api/scrape", function(req, res) {
       var articleContent = $(element);
       var headline = articleContent.find("h3").text();
       var lead = articleContent.find(".lead").text();
+      var link = articleContent.find("a").attr("href");
       // if there is both a headline and a lead, insert them into the database
       if (headline && lead) {
         db.scrapedData.insert(
           {
             headline: headline,
-            lead: lead
+            lead: lead,
+            link: link
           },
           function(err, inserted) {
             if (err) {
