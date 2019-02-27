@@ -1,7 +1,9 @@
 <ul>
     {{#each articles}}
     <div class="article">
-        <p class="headline">{{headline}}</p>
+        <a href={{link}}>
+            <p class="headline">{{headline}}</p>
+        </a>
         <p class="lead">{{lead}}</p>
     </div>
     {{/each}}

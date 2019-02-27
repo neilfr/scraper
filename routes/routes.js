@@ -31,7 +31,7 @@ router.get("/", function(req, res) {
       var hbsObject = {
         articles: found
       };
-      console.log(hbsObject);
+      //     console.log(hbsObject);
       res.render("index", hbsObject);
     }
   });
@@ -65,6 +65,14 @@ router.get("/api/scrape", function(req, res) {
       var headline = articleContent.find("h3").text();
       var lead = articleContent.find(".lead").text();
       var link = articleContent.find("a").attr("href");
+      if (link != undefined) {
+        if (link.charAt(0) === "/") {
+          link = "https://www.tsn.ca" + link;
+        }
+      }
+      console.log("href is:");
+      console.log(link);
+
       // if there is both a headline and a lead, insert them into the database
       if (headline && lead) {
         db.scrapedData.insert(
@@ -79,7 +87,7 @@ router.get("/api/scrape", function(req, res) {
               console.log(err);
             } else {
               // Otherwise, log the inserted data
-              console.log(inserted);
+              //         console.log(inserted);
             }
           }
         );
