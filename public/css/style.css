@@ -1,0 +1,22 @@
+body {
+  font-family: arial;
+}
+
+.article {
+  background-color: bisque;
+  padding: 5px;
+  border-radius: 5px;
+  margin: 5px;
+}
+
+.headline {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 0px;
+  padding: 0px;
+}
+
+.lead {
+  margin: 0px;
+  padding: 5px 0px 0px 0px;
+}
