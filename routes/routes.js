@@ -24,13 +24,21 @@ function scrapingProcess(existingArticles) {
     // Load the html body from axios into cheerio
     var $ = cheerio.load(response.data);
 
-    // For each element with a "article-content" class
-    $(".article-content").each(function(i, element) {
-      // Save the text of the h3 header and .lead class elements... that exist under .article-content elements
-      var articleContent = $(element);
+    // For each element with a "stack-view" class
+    $(".stack-view").each(function(i, element) {
+      var stackView = $(element);
+      // find the "article-content" class descendant
+      var articleContent = stackView.find(".article-content");
+
+      // within the "article-content" element, find the headline, lead and link
       var headline = articleContent.find("h3").text();
       var lead = articleContent.find(".lead").text();
       var link = articleContent.find("a").attr("href");
+      var newArticle = {
+        headline: headline,
+        lead: lead,
+        link: link
+      };
 
       // prepend the tsn base URL if the link does not include a base URL
       if (link != undefined) {
@@ -49,21 +57,13 @@ function scrapingProcess(existingArticles) {
 
       // if the headline is new, and there is both a headline and a lead, insert the article data into the database
       if (newHeadline && headline && lead) {
-        var newArticle = {
-          headline: headline,
-          lead: lead,
-          link: link
-        };
-        console.log("-------------------this is going into the database");
-        console.log(newArticle);
-        console.log("-------------------above is going into the database");
         db.scrapedData.insert(newArticle, function(err, inserted) {
           if (err) {
             // Log the error if one is encountered during the query
             console.log(err);
           } else {
             // Otherwise, log the inserted data
-            // console.log(inserted);
+            console.log(inserted);
           }
         });
       }
