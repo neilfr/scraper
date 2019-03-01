@@ -1,12 +1,33 @@
 body {
   font-family: arial;
+  margin: 0px;
+  padding: 0px;
 }
 
-.article {
-  background-color: bisque;
+.jumbotron {
+  margin: 0px;
+}
+.articleContainer {
+  background-color: lavender;
   padding: 5px;
   border-radius: 5px;
   margin: 5px;
+}
+
+ul,
+li {
+  margin: 0px;
+  padding: 0px;
+}
+
+.btn {
+  margin-left: 5px;
+}
+.article {
+  border: 1px solid black;
+  margin: 5px;
+  padding: 5px;
+  border-radius: 5px;
 }
 
 .headline {

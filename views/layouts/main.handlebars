@@ -2,16 +2,35 @@
 <html lang="en">
 
 <head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <meta charset="UTF-8">
     <link rel="stylesheet" href="css/style.css" type="text/css" />
     <title>TSN Scraper</title>
-    <script src="https://code.jquery.com/jquery.js"></script>
-    <script src="js/scraper.js"></script>
 </head>
 
 <body>
-    <h1>Scraper application</h1>
+    <div class="jumbotron">
+        <h1 class="display-4">TSN Scraper</h1>
+        <p class="lead">Application scrapes today's article headlines, leads and article links from TSN.CA and stores
+            them in a Mongo database.
+            The user can attach, view and delete notes related to the articles. Lastly, the user can delete articles
+            from the database. Note that if today's articles already exist in the database, the application will
+            not store duplicates.</p>
+        <hr class="my-4">
+        <p>Click on the 'Scrape' button to add today's articles to the database.</p>
+        <a class="btn btn-primary btn-lg" href="/api/scrape" role="button">Scrape</a>
+    </div>
     {{{ body }}}
+    <script src="https://code.jquery.com/jquery-3.3.1.js"
+        integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <script src="js/scraper.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
 </body>
 
 </html>
