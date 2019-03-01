@@ -48,6 +48,6 @@ $(".deleteArticleBtn").click(function() {
     url: "/api/delete/" + articleId,
     type: "DELETE"
   }).then(function() {
-    //   window.location.href = "/";
+    window.location.href = "/";
   });
 });
