@@ -62,7 +62,7 @@ function scrapingProcess(existingArticles, res) {
     db.Article.insertMany(newArticles, function(err) {
       if (err) throw err;
       console.log("inserted documents!");
-      res.send("Scrape Complete");
+      res.end();
     });
   });
 }

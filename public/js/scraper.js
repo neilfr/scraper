@@ -1,4 +1,14 @@
-// empty for now
+// call scrape route and then redraw the page
+$("#btnScrape").click(function() {
+  $.ajax({
+    url: "/api/scrape",
+    type: "GET"
+  }).then(function() {
+    window.location.href = "/";
+  });
+});
+
+// add notes
 $(".notesBtn").click(function() {
   console.log("notes button was clicked!");
   articleId = $(this).attr("id");
@@ -13,5 +23,7 @@ $(".deleteBtn").click(function() {
   $.ajax({
     url: "/api/delete/" + articleId,
     type: "DELETE"
+  }).then(function() {
+    window.location.href = "/";
   });
 });
