@@ -6,6 +6,8 @@ body {
 
 .jumbotron {
   margin: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
 }
 .articleContainer {
   background-color: lavender;

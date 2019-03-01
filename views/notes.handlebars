@@ -1,0 +1,15 @@
+<p>notes</p>
+<ul>
+    {{#each notes}}
+    <div class="notesContainer">
+        <div class="note">
+            <p class="noteDescription">{{noteDescription}}</p>
+        </div>
+        <button id="deleteNoteBtn" class="btn btn-danger btn-sm" value={{_id}}>Delete</button>
+    </div>
+    {{/each}}
+</ul>
+<button id="brb">big red button</button>
+<label for="newNote">New Note</label>
+<input id="newNote" type="text" class="form-control" placeholder="Enter new note">
+<button id="addNoteBtn" class="btn btn-primary" value={{articleId}}>Add</button>

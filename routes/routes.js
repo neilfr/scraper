@@ -61,11 +61,35 @@ function scrapingProcess(existingArticles, res) {
     // insert the array of newArticles into the database
     db.Article.insertMany(newArticles, function(err) {
       if (err) throw err;
-      console.log("inserted documents!");
       res.end();
     });
   });
 }
+
+router.get("/notes/:articleId", function(req, res) {
+  var articleId = req.params.articleId;
+  console.log("article Id is:");
+  console.log(articleId);
+  db.Note.find({}, function(err, found) {
+    console.log("notes found is:");
+    console.log(found);
+    var hbsObject = {
+      articleId: articleId,
+      notes: found
+    };
+    res.render("notes", hbsObject);
+  });
+});
+
+router.post("/notes/:articleId", function(req, res) {
+  var articleId = req.params.articleId;
+  var newNote = req.body;
+  console.log("article Id is:");
+  console.log(articleId);
+  console.log("newNote is:");
+  console.log(newNote);
+  db.Article.findOneAndUpdate(articleId, { $push: { notes: newNote } });
+});
 
 router.get("/", function(req, res) {
   // retrieve all articles already in the database
@@ -76,22 +100,23 @@ router.get("/", function(req, res) {
     }
     // If there are no errors, render the data with index.handlebars
     else {
-      //console.log(found);
       var hbsObject = {
         articles: found
       };
+      //res.render("index", hbsObject);
+      console.log("hbs object is:");
+      //     console.log(hbsObject);
       res.render("index", hbsObject);
     }
   });
 });
 
 router.delete("/api/delete/:articleId", function(req, res) {
-  console.log("req.params.articleId is:");
+  console.log("in delete router");
+  console.log("req.params.articleid is: ");
   console.log(req.params.articleId);
-  //db.Article.remove({ _id: db.ObjectId(req.params.articleId) }, function() {
-  db.Article.findOneAndDelete(req.params.id, function() {
-    console.log("got to delete route");
-    res.send("Delete Complete");
+  db.Article.findByIdAndDelete(req.params.articleId, function() {
+    res.end();
   });
 });
 
@@ -111,7 +136,7 @@ router.get("/api/all", function(req, res) {
 });
 
 // Scrape data from one site and place it into the mongodb db
-router.get("/api/scrape", function(req, res) {
+router.post("/api/scrape", function(req, res) {
   // Get all the existing articles from the database
   // This will be used to check if scraped articles are already in the database
   db.Article.find({}, function(error, found) {
@@ -121,10 +146,8 @@ router.get("/api/scrape", function(req, res) {
     }
     // If there are no errors, proceed with scraping process
     else {
-      // pass the set of existing articles to the scraping process
-      scrapingProcess(found, res);
-
-      //res.send("Scrape Complete");
+      // pass the set of existing articles, and the res object, to the scraping process
+      scrapingProcess(found, res); // ! how do i use a callback on my own function???
     }
   });
 });
