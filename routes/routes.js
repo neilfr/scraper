@@ -1,28 +1,26 @@
 // Dependencies
 var express = require("express");
 var router = express.Router();
-var mongojs = require("mongojs");
+var mongoose = require("mongoose");
+var db = require("../models");
 
 // Require axios and cheerio. This makes the scraping possible
 var axios = require("axios");
 var cheerio = require("cheerio");
 
-// Database configuration
+// Connect to the Mongo DB
 var databaseUrl = "tsnscraper";
-var collections = ["scrapedData"];
-
-// Hook mongojs configuration to the db variable
-var db = mongojs(databaseUrl, collections);
-db.on("error", function(error) {
-  console.log("Database Error:", error);
+mongoose.connect("mongodb://localhost/" + databaseUrl, {
+  useNewUrlParser: true
 });
 
 // function for executing the scraping process
-function scrapingProcess(existingArticles) {
+function scrapingProcess(existingArticles, res) {
   // Make a request via axios for the news section of `tsn.ca`
   axios.get("https://www.tsn.ca/").then(function(response) {
     // Load the html body from axios into cheerio
     var $ = cheerio.load(response.data);
+    var newArticles = [];
 
     // For each element with a "stack-view" class
     $(".stack-view").each(function(i, element) {
@@ -34,11 +32,6 @@ function scrapingProcess(existingArticles) {
       var headline = articleContent.find("h3").text();
       var lead = articleContent.find(".lead").text();
       var link = articleContent.find("a").attr("href");
-      var newArticle = {
-        headline: headline,
-        lead: lead,
-        link: link
-      };
 
       // prepend the tsn base URL if the link does not include a base URL
       if (link != undefined) {
@@ -55,26 +48,28 @@ function scrapingProcess(existingArticles) {
         }
       }
 
-      // if the headline is new, and there is both a headline and a lead, insert the article data into the database
+      // if the headline is new, and there is both a headline and a lead, insert the article data into the newArticle array
       if (newHeadline && headline && lead) {
-        db.scrapedData.insert(newArticle, function(err, inserted) {
-          if (err) {
-            // Log the error if one is encountered during the query
-            console.log(err);
-          } else {
-            // Otherwise, log the inserted data
-            console.log(inserted);
-            res.end();
-          }
+        newArticles.push({
+          headline: headline,
+          lead: lead,
+          link: link
         });
       }
+    });
+
+    // insert the array of newArticles into the database
+    db.Article.insertMany(newArticles, function(err) {
+      if (err) throw err;
+      console.log("inserted documents!");
+      res.send("Scrape Complete");
     });
   });
 }
 
 router.get("/", function(req, res) {
   // retrieve all articles already in the database
-  db.scrapedData.find({}, function(error, found) {
+  db.Article.find({}, function(error, found) {
     // Throw any errors to the console
     if (error) {
       console.log(error);
@@ -89,17 +84,12 @@ router.get("/", function(req, res) {
     }
   });
 });
-/*
-router.delete("/delete/:articleId", function(req, res) {
-  // retrieve all articles already in the database
-  db.scrapedData.remove({ _id: req.params.articleId }, true);
-});
-*/
+
 router.delete("/api/delete/:articleId", function(req, res) {
-  // retrieve all articles already in the database
   console.log("req.params.articleId is:");
   console.log(req.params.articleId);
-  db.scrapedData.remove({ _id: db.ObjectId(req.params.articleId) }, function() {
+  //db.Article.remove({ _id: db.ObjectId(req.params.articleId) }, function() {
+  db.Article.findOneAndDelete(req.params.id, function() {
     console.log("got to delete route");
     res.send("Delete Complete");
   });
@@ -107,8 +97,8 @@ router.delete("/api/delete/:articleId", function(req, res) {
 
 // Retrieve data from the db
 router.get("/api/all", function(req, res) {
-  // Find all results from the scrapedData collection in the db
-  db.scrapedData.find({}, function(error, found) {
+  // Find all results from the Article collection in the db
+  db.Article.find({}, function(error, found) {
     // Throw any errors to the console
     if (error) {
       console.log(error);
@@ -124,7 +114,7 @@ router.get("/api/all", function(req, res) {
 router.get("/api/scrape", function(req, res) {
   // Get all the existing articles from the database
   // This will be used to check if scraped articles are already in the database
-  db.scrapedData.find({}, function(error, found) {
+  db.Article.find({}, function(error, found) {
     // Throw any errors to the console
     if (error) {
       console.log(error);
@@ -132,63 +122,11 @@ router.get("/api/scrape", function(req, res) {
     // If there are no errors, proceed with scraping process
     else {
       // pass the set of existing articles to the scraping process
-      //scrapingProcess(found);
-      // Make a request via axios for the news section of `tsn.ca`
-      axios.get("https://www.tsn.ca/").then(function(response) {
-        // Load the html body from axios into cheerio
-        var $ = cheerio.load(response.data);
+      scrapingProcess(found, res);
 
-        // For each element with a "stack-view" class
-        $(".stack-view").each(function(i, element) {
-          var stackView = $(element);
-          // find the "article-content" class descendant
-          var articleContent = stackView.find(".article-content");
-
-          // within the "article-content" element, find the headline, lead and link
-          var headline = articleContent.find("h3").text();
-          var lead = articleContent.find(".lead").text();
-          var link = articleContent.find("a").attr("href");
-          var newArticle = {
-            headline: headline,
-            lead: lead,
-            link: link
-          };
-
-          // prepend the tsn base URL if the link does not include a base URL
-          if (link != undefined) {
-            if (link.charAt(0) === "/") {
-              link = "https://www.tsn.ca" + link;
-            }
-          }
-
-          // check if scraped headline is already in the database
-          var newHeadline = true;
-          for (var i = 0; i < found.length; i++) {
-            if (found[i].headline === headline) {
-              newHeadline = false;
-            }
-          }
-
-          // if the headline is new, and there is both a headline and a lead, insert the article data into the database
-          if (newHeadline && headline && lead) {
-            db.scrapedData.insert(newArticle, function(err, inserted) {
-              if (err) {
-                // Log the error if one is encountered during the query
-                console.log(err);
-              } else {
-                // Otherwise, log the inserted data
-                console.log(inserted);
-              }
-            });
-          }
-        });
-
-        res.send("Scrape Complete");
-      });
+      //res.send("Scrape Complete");
     }
   });
-  // Send a "Scrape Complete" message to the browser
-  //res.send("Scrape Complete");
 });
 
 module.exports = router;
