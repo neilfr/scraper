@@ -1,9 +1,8 @@
-<h3 id="articleId" data-value={{articleId}}>Notes for article</h3>
+<h3 id="articleId" data-value={{articleId}}>{{headline}}</h3>
 <ul>
   {{#each notes}}
   <div class="noteContainer">
     <div class="note">
-      <p class="noteId">{{_id}}</p>
       <p class="noteDescription">{{noteDescription}}</p>
     </div>
     <button class="deleteNoteBtn btn btn-danger btn-sm" value={{id}}>Delete</button>

@@ -68,12 +68,12 @@ function scrapingProcess(existingArticles, res) {
 
 router.get("/notes/:articleId", function(req, res) {
   var articleId = req.params.articleId;
-  var notesToDisplay = [];
   db.Article.findById(req.params.articleId)
     .populate("notes")
     .exec(function(err, found) {
       var hbsObject = {
         articleId: articleId,
+        headline: found.headline,
         notes: found.notes
       };
       //!why can't i render this as a modal?
@@ -126,14 +126,6 @@ router.delete("/api/article/delete/:articleId", function(req, res) {
       console.log("error", err);
       res.send("article and subnotes deleted");
     });
-    /*
-    db.Article.deleteOne(
-      { _id: new mongoose.Types.ObjectId(req.params.articleId) },
-      function(err) {
-        console.log("error", err);
-        res.end();
-      }
-    );*/
   });
 });
 

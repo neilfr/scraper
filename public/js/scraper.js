@@ -7,9 +7,7 @@ $("#btnScrape").click(function() {
 
 // see notes for this article
 $(".notesBtn").click(function() {
-  console.log("notes button was clicked!");
   articleId = $(this).val();
-  console.log(articleId);
   window.location.href = "/notes/" + articleId;
 });
 
