@@ -9,7 +9,10 @@ body {
   padding-top: 0px;
   padding-bottom: 0px;
 }
-.articleContainer {
+
+.addNoteContainer,
+.articleContainer,
+.noteContainer {
   background-color: lavender;
   padding: 5px;
   border-radius: 5px;
@@ -25,7 +28,8 @@ li {
 .btn {
   margin-left: 5px;
 }
-.article {
+.article,
+.note {
   border: 1px solid black;
   margin: 5px;
   padding: 5px;

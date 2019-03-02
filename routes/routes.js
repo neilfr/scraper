@@ -70,13 +70,24 @@ router.get("/notes/:articleId", function(req, res) {
   var articleId = req.params.articleId;
   console.log("article Id is:");
   console.log(articleId);
+  var notesToDisplay = [];
+  //! how to i get the list of noteDescriptions instead of IDs?
   db.Article.findById(req.params.articleId, function(err, found) {
-    console.log("article found is:");
+    console.log("found that matches the article findbyid is:");
     console.log(found);
+    found.notes.forEach(function(element) {
+      console.log("element");
+      console.log(element);
+      notesToDisplay.push(element);
+    });
+    console.log("Notes to display:");
     var hbsObject = {
       articleId: articleId,
-      notes: found.notes
+      notes: notesToDisplay
     };
+    console.log("hbsobject is:");
+    console.log(hbsObject);
+    //!why can't i render this as a modal?
     res.render("notes", hbsObject);
   });
 });
@@ -93,9 +104,10 @@ router.post("/notes/:articleId", function(req, res) {
     console.log(data);
     console.log("data._id is");
     console.log(data._id);
+    //! should i post the description and not just the id?
     db.Article.findByIdAndUpdate(
       req.params.articleId,
-      { $push: { notes: data._id } },
+      { $push: { notes: data } },
       { new: true },
       function(err, found) {
         //if (err) throw err;
@@ -119,19 +131,30 @@ router.get("/", function(req, res) {
         articles: found
       };
       //res.render("index", hbsObject);
-      console.log("hbs object is:");
+      //console.log("hbs object is:");
       //     console.log(hbsObject);
       res.render("index", hbsObject);
     }
   });
 });
 
-router.delete("/api/delete/:articleId", function(req, res) {
-  console.log("in delete router");
-  console.log("req.params.articleid is: ");
+router.delete("/api/article/delete/:articleId", function(req, res) {
+  console.log("in article delete router");
+  console.log("req.params.articleId is: ");
   console.log(req.params.articleId);
   db.Article.findByIdAndDelete(req.params.articleId, function() {
     res.end();
+  });
+});
+
+router.delete("/api/note/delete/:noteId", function(req, res) {
+  console.log("in note delete router");
+  console.log("req.params.noteId is: ");
+  console.log(req.params.noteId);
+  //!deleting notes but NOT the related note ids in the articles
+  //!so what is the model for???
+  db.Note.findByIdAndDelete(req.params.noteId, function() {
+    res.send("done delete");
   });
 });
 
