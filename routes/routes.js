@@ -68,21 +68,14 @@ function scrapingProcess(existingArticles, res) {
 
 router.get("/notes/:articleId", function(req, res) {
   var articleId = req.params.articleId;
-  console.log("article Id is:");
-  console.log(articleId);
   var notesToDisplay = [];
-  //! how to i get the list of noteDescriptions instead of IDs?
   db.Article.findById(req.params.articleId)
     .populate("notes")
     .exec(function(err, found) {
-      console.log("found that matches the article findbyid is:");
-      console.log(found);
       var hbsObject = {
         articleId: articleId,
         notes: found.notes
       };
-      console.log("hbsobject is:");
-      console.log(hbsObject);
       //!why can't i render this as a modal?
       res.render("notes", hbsObject);
     });
@@ -91,16 +84,7 @@ router.get("/notes/:articleId", function(req, res) {
 router.post("/notes/:articleId", function(req, res) {
   var articleId = req.params.articleId;
   var newNote = req.body;
-  console.log("article Id is:");
-  console.log(articleId);
-  console.log("newNote is:");
-  console.log(newNote);
   db.Note.create(req.body).then(function(data) {
-    console.log("the data is:");
-    console.log(data);
-    console.log("data._id is");
-    console.log(data._id);
-    //! should i post the description and not just the id?
     db.Article.findByIdAndUpdate(
       req.params.articleId,
       { $push: { notes: data } },
@@ -124,40 +108,43 @@ router.get("/", function(req, res) {
       var hbsObject = {
         articles: found
       };
-      //res.render("index", hbsObject);
-      //console.log("hbs object is:");
-      //     console.log(hbsObject);
       res.render("index", hbsObject);
     }
   });
 });
 
 router.delete("/api/article/delete/:articleId", function(req, res) {
-  console.log("in article delete router");
-  console.log("req.params.articleId is: ");
-  console.log(req.params.articleId);
-  db.Article.deleteOne(
-    { _id: new mongoose.Types.ObjectId(req.params.articleId) },
-    function(err) {
-      console.log("error", err);
-      res.end();
+  db.Article.findById(req.params.articleId, function(err, found) {
+    if (err) throw err;
+    for (let i = 0; i < found.notes.length; i++) {
+      db.Note.findByIdAndDelete(found.notes[i], function(err) {
+        console.log(err);
+      });
     }
-  );
+  }).then(function() {
+    db.Article.findByIdAndDelete(req.params.articleId, function(err) {
+      console.log("error", err);
+      res.send("article and subnotes deleted");
+    });
+    /*
+    db.Article.deleteOne(
+      { _id: new mongoose.Types.ObjectId(req.params.articleId) },
+      function(err) {
+        console.log("error", err);
+        res.end();
+      }
+    );*/
+  });
 });
 
 router.delete("/api/note/delete/:noteId/:articleId", function(req, res) {
-  console.log("in note delete router");
-  console.log("req.params.noteId is: ");
-  console.log(req.params.noteId);
-  //!deleting notes but NOT the related note ids in the articles
-  //!so what is the model for???
-  //  db.Note.findByIdAndDelete(req.params.noteId, function() {
-  //    res.send("done delete");
-  //  });
   db.Article.findByIdAndUpdate(
     req.params.articleId,
     { $pullAll: { notes: [new mongoose.Types.ObjectId(req.params.noteId)] } },
     function(err) {
+      db.Note.findByIdAndDelete(req.params.noteId, function(err) {
+        console.log(err);
+      });
       console.log("error:", err);
       res.send("done delete");
     }
