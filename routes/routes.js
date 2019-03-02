@@ -10,7 +10,9 @@ var cheerio = require("cheerio");
 
 // Connect to the Mongo DB
 var databaseUrl = "tsnscraper";
-mongoose.connect("mongodb://localhost/" + databaseUrl, {
+var MONGODB_URI =
+  process.env.MONGODB_URI || "mongodb://localhost/" + databaseUrl;
+mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true
 });
 
