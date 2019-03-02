@@ -5,9 +5,9 @@ body {
 }
 
 .jumbotron {
-  margin: 0px;
+  margin: 5px;
   padding-top: 0px;
-  padding-bottom: 0px;
+  padding-bottom: 10px;
 }
 
 .addNoteContainer,
@@ -46,4 +46,13 @@ li {
 .lead {
   margin: 0px;
   padding: 5px 0px 0px 0px;
+}
+
+.my-4 {
+  margin: 0px;
+  padding: 0px;
+}
+
+.titlep {
+  font-size: 1em;
 }
