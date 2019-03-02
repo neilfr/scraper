@@ -26,7 +26,7 @@ $("#addNoteBtn").click(function() {
     // !why does this callback never get executed???
     console.log("arrrgggghhhh");
     console.log("windows.location.href /notes/" + articleId);
-    //window.location.href = "/notes/" + articleId;
+    window.location.reload();
   });
 });
 
@@ -40,7 +40,7 @@ $(".deleteArticleBtn").click(function() {
     url: "/api/article/delete/" + articleId,
     type: "DELETE"
   }).then(function() {
-    window.location.href = "/";
+    window.location.reload();
   });
 });
 
@@ -49,15 +49,14 @@ $(".deleteNoteBtn").click(function() {
   noteId = $(this).val();
   console.log("note id");
   console.log(noteId);
-  articleId = $("#articleId").val();
+  articleId = $("#articleId").attr("data-value");
   console.log("article id");
   console.log(articleId);
   $.ajax({
-    url: "/api/note/delete/" + noteId,
+    url: "/api/note/delete/" + noteId + "/" + articleId,
     type: "DELETE"
   }).then(function() {
-    //! why is articleId null???
     console.log("/notes/" + articleId);
-    //window.location.href = "/notes/" + articleId;
+    window.location.reload();
   });
 });
