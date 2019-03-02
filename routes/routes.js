@@ -70,12 +70,12 @@ router.get("/notes/:articleId", function(req, res) {
   var articleId = req.params.articleId;
   console.log("article Id is:");
   console.log(articleId);
-  db.Note.find({}, function(err, found) {
-    console.log("notes found is:");
+  db.Article.findById(req.params.articleId, function(err, found) {
+    console.log("article found is:");
     console.log(found);
     var hbsObject = {
       articleId: articleId,
-      notes: found
+      notes: found.notes
     };
     res.render("notes", hbsObject);
   });
@@ -88,7 +88,22 @@ router.post("/notes/:articleId", function(req, res) {
   console.log(articleId);
   console.log("newNote is:");
   console.log(newNote);
-  db.Article.findOneAndUpdate(articleId, { $push: { notes: newNote } });
+  db.Note.create(req.body).then(function(data) {
+    console.log("the data is:");
+    console.log(data);
+    console.log("data._id is");
+    console.log(data._id);
+    db.Article.findByIdAndUpdate(
+      req.params.articleId,
+      { $push: { notes: data._id } },
+      { new: true },
+      function(err, found) {
+        //if (err) throw err;
+        //console.log("found after findbyidandupdate is:");
+        //console.log(found);
+      }
+    );
+  });
 });
 
 router.get("/", function(req, res) {

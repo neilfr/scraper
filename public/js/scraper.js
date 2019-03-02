@@ -10,7 +10,7 @@ $(".notesBtn").click(function() {
   console.log("notes button was clicked!");
   articleId = $(this).val();
   console.log(articleId);
-  // window.location.href = "/notes/" + articleId;
+  window.location.href = "/notes/" + articleId;
 });
 
 $("#brb").click(function() {
@@ -27,7 +27,7 @@ $("#addNoteBtn").click(function() {
   console.log(newNote);
 
   $.post("/notes/" + articleId, { noteDescription: newNote }).then(function() {
-    //window.location.href = "/notes/" + articleId;
+    window.location.href = "/notes/" + articleId;
   });
   /*($.ajax({
     url: "/notes",
