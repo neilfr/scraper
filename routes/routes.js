@@ -76,14 +76,11 @@ router.get("/notes/:articleId", function(req, res) {
         headline: found.headline,
         notes: found.notes
       };
-      //!why can't i render this as a modal?
       res.render("notes", hbsObject);
     });
 });
 
 router.post("/notes/:articleId", function(req, res) {
-  var articleId = req.params.articleId;
-  var newNote = req.body;
   db.Note.create(req.body).then(function(data) {
     db.Article.findByIdAndUpdate(
       req.params.articleId,
